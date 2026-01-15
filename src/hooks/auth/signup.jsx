@@ -66,6 +66,8 @@ const useSignup = () => {
           "/google-signup?code=" + codeResponse.code
         );
         if (success) {
+          console.log("data", data);
+          console.log("token", token);
           dispatch(setUserDetails(data));
           dispatch(setToken(token));
           navigate('/');
