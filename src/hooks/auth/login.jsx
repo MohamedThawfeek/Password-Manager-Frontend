@@ -5,40 +5,54 @@ import ApiRequest from "../../services/axios";
 import { setUserDetails, setToken } from "../../redux/slice/user";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import * as yup from 'yup';
 
 const useLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [googleLoader, setGoogleLoader] = useState(false);
-  const [error, setError] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [loader, setLoader] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const [validationErrors, setValidationErrors] = useState({});
+  const schema = yup.object().shape({
+    email: yup.string().email('Invalid email').required('Email is required'),
+    password: yup.string().required('Password is required'),
+  })
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+      await schema.validate({ email, password }, { abortEarly: false });
       const payload = {
         email: email,
         password: password,
       };
       setLoader(true);
       const { success, data, token } = await ApiRequest.post(
-        "/login-user",
+        "/auth/login-user",
         payload
       );
       if (success) {
         dispatch(setUserDetails(data));
         dispatch(setToken(token));
-        toast.success("Login successful");
         navigate("/");
       }
     } catch (error) {
       console.log("error", error);
-      setErrorMessage(error.response.data.message);
+      if (error.inner) {
+        const errors = error.inner.reduce((acc, curr) => {
+          acc[curr.path] = curr.message;
+          return acc;
+        }, {});
+        setValidationErrors(errors);
+        setTimeout(() => {
+          setValidationErrors({});
+        }, 4000);
+        setLoader(false);
+      }
       toast.error(error.response.data.message);
+      setLoader(false);
     } finally {
       setLoader(false);
     }
@@ -55,22 +69,17 @@ const useLogin = () => {
         if (success) {
           dispatch(setUserDetails(data));
           dispatch(setToken(token));
-          toast.success("Login successful");
           navigate("/");
         }
       } catch (error) {
         console.log("server error", error);
         // toast.error(error.response.data.message);
-        setError(true);
-        setErrorMessage(error.response.data.message);
       } finally {
         setGoogleLoader(false);
       }
     } catch (error) {
       console.log("error", error);
       toast.error(error.response.data.message);
-      setError(true);
-      setErrorMessage(error.response.data.message);
     } finally {
       setGoogleLoader(false);
     }
@@ -97,10 +106,9 @@ const useLogin = () => {
     setShowPassword,
     handleSubmit,
     googleLoader,
-    error,
-    errorMessage,
     loader,
     GoogleSignIn,
+    validationErrors,
   };
 };
 

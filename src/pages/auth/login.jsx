@@ -13,10 +13,9 @@ const Login = () => {
     setShowPassword,
     handleSubmit,
     googleLoader,
-    error,
-    errorMessage,
     loader,
     GoogleSignIn,
+    validationErrors,
   } = useLogin();
 
   return (
@@ -77,10 +76,10 @@ const Login = () => {
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 ${validationErrors.email ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="you@example.com"
-                  required
                 />
+                {validationErrors.email && <p className="text-red-500 text-xs absolute top-[100%] left-1">{validationErrors.email}</p>}
               </div>
             </div>
 
@@ -113,9 +112,9 @@ const Login = () => {
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 ${validationErrors.password ? 'border-red-500' : 'border-gray-300'}`}
                   placeholder="Enter your password"
-                  required
+                  
                 />
                 <button
                   type="button"
@@ -158,6 +157,7 @@ const Login = () => {
                     </svg>
                   )}
                 </button>
+                {validationErrors.password && <p className="text-red-500 text-xs absolute top-[100%] left-1">{validationErrors.password}</p>}
               </div>
             </div>
 
@@ -187,10 +187,11 @@ const Login = () => {
 
             {/* Login Button */}
             <button
+              disabled={loader}
               type="submit"
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
-              Sign In
+              {loader ? <ClipLoader color="#fff" size={20} /> : "Sign In"}
             </button>
 
             {/* Divider */}

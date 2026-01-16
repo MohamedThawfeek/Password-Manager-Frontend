@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import useResetPassword from "../../hooks/auth/reset-password";
+import { ClipLoader } from "react-spinners";
 
 const ResetPassword = () => {
   const {
@@ -12,6 +13,8 @@ const ResetPassword = () => {
     isSubmitted,
     handleChange,
     handleSubmit,
+    validationErrors,
+    loader,
   } = useResetPassword();
 
   return (
@@ -78,9 +81,8 @@ const ResetPassword = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+                    className={`w-full pl-10 pr-12 py-3 border  rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 ${validationErrors.password ? 'border-red-500' : 'border-gray-300'}`}
                     placeholder="Enter new password"
-                    required
                   />
                   <button
                     type="button"
@@ -123,6 +125,9 @@ const ResetPassword = () => {
                       </svg>
                     )}
                   </button>
+                {validationErrors.password && (
+                  <p className="text-red-500 text-xs absolute top-[100%] left-1">{validationErrors.password}</p>
+                )}
                 </div>
               </div>
 
@@ -156,9 +161,8 @@ const ResetPassword = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+                    className={`w-full pl-10 pr-12 py-3 border  rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 ${validationErrors.confirmPassword ? 'border-red-500' : 'border-gray-300'}`}
                     placeholder="Confirm new password"
-                    required
                   />
                   <button
                     type="button"
@@ -201,6 +205,9 @@ const ResetPassword = () => {
                       </svg>
                     )}
                   </button>
+                {validationErrors.confirmPassword && (
+                  <p className="text-red-500 text-xs absolute top-[100%] left-1">{validationErrors.confirmPassword}</p>
+                )}
                 </div>
               </div>
 
@@ -258,9 +265,12 @@ const ResetPassword = () => {
               {/* Reset Button */}
               <button
                 type="submit"
+                disabled={loader}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
-                Reset Password
+                {
+                  loader ? <ClipLoader color="#fff" size={20} /> : "Reset Password"
+                }
               </button>
 
               {/* Back to Login Link */}
